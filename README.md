@@ -1,7 +1,7 @@
 # django-rest-autogen
 Autogenerate rest framework endpoints for all your django models
 
-##Basic Configuration
+## Basic Configuration
 ```
 from django_rest_autogen.core import AutoGenRouter
 router = AutoGenRouter().get_default_router()
@@ -11,7 +11,7 @@ urlpatterns += [
 ]
 ```
 
-##Open API Integration
+## Open API Integration
 django-rest-swagger provides convenient open-api compatible docs for all auto-generated endpoints
 ```
 from rest_framework_swagger.views import get_swagger_view
