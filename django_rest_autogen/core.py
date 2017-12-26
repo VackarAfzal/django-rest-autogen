@@ -1,13 +1,14 @@
 from rest_framework import viewsets, serializers, routers
 from rest_framework.permissions import IsAdminUser
-from django.apps import apps
 import rest_framework_filters as filters
+from django.apps import apps
+from rest_framework import filters
 
 
 
 class AutoGenRouter(object):
 
-    def _get_router(self, viewset_cls=None, serialiser_cls=None, permissions=None, filter_cls=None):
+    def _get_router(self, viewset_cls=None, serialiser_cls=None, permissions=None, include_filtering=False):
         autogen_router = routers.DefaultRouter()
 
         viewset_cls     = viewset_cls or viewsets.ModelViewSet
@@ -29,8 +30,17 @@ class AutoGenRouter(object):
                 })
             }
 
-            if filter_cls:
-                cls_props['filter_class'] = filter_cls
+            if include_filtering:
+                core_fields = [f for f in model._meta.get_fields() if not (
+                    f.one_to_many or f.one_to_one or f.many_to_many
+                )]
+
+                cls_props['filter_class'] = type('{0}ModelFilter'.format(resource_name), (filters.FilterSet,), {
+                    'Meta': type('Meta', (object,), {
+                        'model': model,
+                        'fields': core_fields
+                    })
+                })
 
             cls_config = type('{0}ViewSet'.format(resource_name), (viewset_cls,), cls_props)
 
@@ -39,10 +49,10 @@ class AutoGenRouter(object):
         return autogen_router
 
 
-    def get_default_router(self):
+    def get_default_router(self, include_filtering=True):
         '''
         Gets a default router pre-configured for all models
         :return: The default router pre-configured for all models
         '''
-        return self._get_router(filter_cls=filters.AllLookupsFilter)
+        return self._get_router(include_filtering)
 
