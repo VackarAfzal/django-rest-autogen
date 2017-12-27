@@ -1,3 +1,4 @@
+from django.db.models.fields.files import FileField
 from rest_framework import viewsets, serializers, routers
 from rest_framework.permissions import IsAdminUser
 import rest_framework_filters as filters
