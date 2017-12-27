@@ -1,16 +1,18 @@
 from django.db.models.fields.files import FileField
 from rest_framework import viewsets, serializers, routers
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAdminUser
 import rest_framework_filters as filters
 from django.apps import apps
 
 class AutoGenRouter(object):
 
-    def _get_router(self, viewset_cls=None, serialiser_cls=None, permissions=None, include_filtering=False):
+    def _get_router(self, viewset_cls=None, serialiser_cls=None, permissions=None, pagination_cls=None, include_filtering=False):
         autogen_router = routers.DefaultRouter()
 
         viewset_cls     = viewset_cls or viewsets.ModelViewSet
         serialiser_cls  = serialiser_cls or serializers.ModelSerializer
+        pagination_cls  = LimitOffsetPagination
         permissions     = permissions or (IsAdminUser,)
 
         for mdl in apps.get_models():
@@ -19,6 +21,7 @@ class AutoGenRouter(object):
 
             cls_props = {
                 'queryset': model.objects.all(),
+                'pagination_class': pagination_cls,
                 'permission_classes': permissions,
                 'serializer_class': type('{0}Serialiser'.format(resource_name), (serialiser_cls,), {
                     'Meta': type('Meta', (object,), {
