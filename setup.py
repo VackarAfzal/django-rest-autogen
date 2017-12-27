@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='django-rest-autogen',
-    version='0.2.3',
+    version='0.2.4',
     url='https://github.com/VackarAfzal/django-rest-autogen',
     author='Vackar Afzal',
     author_email='v.z.afzal@dundee.ac.uk',
