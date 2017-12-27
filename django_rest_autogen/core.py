@@ -2,9 +2,6 @@ from rest_framework import viewsets, serializers, routers
 from rest_framework.permissions import IsAdminUser
 import rest_framework_filters as filters
 from django.apps import apps
-from rest_framework import filters
-
-
 
 class AutoGenRouter(object):
 
@@ -31,14 +28,27 @@ class AutoGenRouter(object):
             }
 
             if include_filtering:
-                core_fields = [f for f in model._meta.get_fields() if not (
-                    f.one_to_many or f.one_to_one or f.many_to_many
-                )]
+                all_fields = model._meta.get_fields()
 
-                cls_props['filter_class'] = type('{0}ModelFilter'.format(resource_name), (filters.FilterSet,), {
+                core_fields = [
+                    f for f in all_fields if (f.concrete)
+                       and not (f.one_to_many or f.one_to_one or f.many_to_many or isinstance(f, FileField))
+                ]
+
+                related_fields = [
+                    f for f in all_fields if (f.concrete) and (f.one_to_many or f.one_to_one)
+                ]
+
+                fields_defs = {}
+                for f in core_fields:
+                    fields_defs[f.name] = '__all__'
+                for f in related_fields:
+                    fields_defs[f.name] = ['exact', 'in', 'gt', 'gte', 'lt', 'lte', 'isnull']
+
+                cls_props['filter_class'] = type('{0}Filter'.format(resource_name), (filters.FilterSet,), {
                     'Meta': type('Meta', (object,), {
                         'model': model,
-                        'fields': core_fields
+                        'fields': fields_defs
                     })
                 })
 
@@ -54,5 +64,4 @@ class AutoGenRouter(object):
         Gets a default router pre-configured for all models
         :return: The default router pre-configured for all models
         '''
-        return self._get_router(include_filtering)
-
+        return self._get_router(include_filtering=include_filtering)
