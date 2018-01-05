@@ -3,20 +3,21 @@ from rest_framework import viewsets, serializers, routers
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAdminUser
 import rest_framework_filters as filters
+from django.contrib import admin
 from django.apps import apps
 
 class AutoGenRouter(object):
 
-    def _get_router(self, viewset_cls=None, serialiser_cls=None, permissions=None, pagination_cls=None, include_filtering=False):
+    def _get_router(self, viewset_cls=None, serialiser_cls=None, permissions=None, pagination_cls=None, include_filtering=False, models=None):
         autogen_router = routers.DefaultRouter()
 
         viewset_cls     = viewset_cls or viewsets.ModelViewSet
         serialiser_cls  = serialiser_cls or serializers.ModelSerializer
         pagination_cls  = LimitOffsetPagination
         permissions     = permissions or (IsAdminUser,)
+        models          = models or apps.get_models()
 
-        for mdl in apps.get_models():
-            model = mdl
+        for model in models:
             resource_name = model.__name__
 
             cls_props = {
@@ -62,10 +63,17 @@ class AutoGenRouter(object):
 
         return autogen_router
 
-
     def get_default_router(self, include_filtering=True):
         '''
         Gets a default router pre-configured for all models
         :return: The default router pre-configured for all models
         '''
         return self._get_router(include_filtering=include_filtering)
+
+    def get_admin_site_router(self, include_filtering=True):
+        '''
+        Gets a router pre-configured for all models that are registered with the django admin site
+        :return: The default router pre-configured for all models
+        '''
+        models = [ x for x in admin.site._registry.keys() ]
+        return self._get_router(include_filtering=include_filtering, models=models)
