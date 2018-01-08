@@ -18,6 +18,8 @@ class AutoGenRouter(object):
         permissions     = permissions or (IsAdminUser,)
         models          = models or apps.get_models()
 
+        models = sorted(models, key=lambda m: m.__name__)
+
         for model in models:
             resource_name = model.__name__
 
