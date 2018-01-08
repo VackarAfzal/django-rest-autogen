@@ -7,7 +7,7 @@ import rest_framework_filters as filters
 from django.contrib import admin
 from django.apps import apps
 
-class AutoGenRouter(object):
+class RouterFactory(object):
 
     def _get_router(self, viewset_cls=None, serialiser_cls=None, permissions=None, pagination_cls=None, include_filtering=False, models=None):
         autogen_router = routers.DefaultRouter()
