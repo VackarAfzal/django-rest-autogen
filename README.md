@@ -3,8 +3,8 @@ Autogenerate rest framework endpoints for your django models
 
 ## Basic Configuration
 ```python
-from django_rest_autogen.core import AutoGenRouter
-router = AutoGenRouter().get_default_router()
+from django_rest_autogen.core import RouterFactory
+router = RouterFactory().get_default_router()
 
 urlpatterns += [
     url(r'^internal-api/', include(router.urls, namespace='internal_api')),
@@ -14,8 +14,8 @@ urlpatterns += [
 ## Admin Models
 You can restrict the auto-generation to only onclude models registered with your admin site
 ```python
-from django_rest_autogen.core import AutoGenRouter
-router = AutoGenRouter().get_admin_site_router(include_filtering=True)
+from django_rest_autogen.core import RouterFactory
+router = RouterFactory().get_admin_site_router(include_filtering=True)
 
 urlpatterns += [
     url(r'^internal-api/', include(router.urls, namespace='internal_api')),
