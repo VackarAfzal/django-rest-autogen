@@ -10,7 +10,7 @@ setup(
     author_email='v.z.afzal@dundee.ac.uk',
     description=('A libarry to auto-gen rest-framework endpoint for all your django models.'),
     license='MIT',
-    packages=['django-rest-autogen'],
+    packages=['django_rest_autogen'],
     install_requires=['djangorestframework >= 3.6.3', 'djangorestframework-filters==0.10.2'],
     classifiers=[
         'Development Status :: 3 - Alpha',
